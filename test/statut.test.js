@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { toRaw } from "vue";
 import { createTodoHarness } from "./helpers.js";
 
 describe("Changement du statut", () => {
@@ -22,7 +23,7 @@ describe("Changement du statut", () => {
 
   it("ne modifie rien si la tâche demandée n’existe pas", () => {
     const { tasks, actions } = createTodoHarness();
-    const before = structuredClone(tasks.value);
+    const before = structuredClone(toRaw(tasks.value));
 
     actions.finish(999);
 

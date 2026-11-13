@@ -171,7 +171,7 @@ describe("Rapport des tests Node.js", () => {
     assert.match(output, /Ligne : 6/);
     assert.match(output, /structuredClone\(\) a rejeté cette valeur/);
     assert.match(output, /→\s+6 \|     const backup = structuredClone\(tasks\);/);
-    assert.match(output, /TEST ÉCHOUÉ : autre échec/);
+    assert.match(output, /TEST ÉCHOUÉ : Statut > autre échec/);
     assert.match(output, /Valeur attendue : 2/);
     assert.match(output, /Valeur obtenue : 1/);
     assert.match(output, /Tests ratés\s+:\s+2/);
@@ -243,10 +243,11 @@ describe("Rapport des tests Node.js", () => {
         cancelled: 0,
       }),
     ]);
+    const plainOutput = output.replace(/\u001b\[[0-9;]*m/g, "");
 
-    assert.equal((output.match(/RÉSUMÉ DES TESTS/g) ?? []).length, 1);
-    assert.match(output, /Tests réussis\s+:\s+1/);
-    assert.match(output, /Total\s+:\s+1/);
+    assert.equal((plainOutput.match(/RÉSUMÉ DES TESTS/g) ?? []).length, 1);
+    assert.match(plainOutput, /Tests réussis\s+:\s+1/);
+    assert.match(plainOutput, /Total\s+:\s+1/);
   });
 
   it("active les couleurs ANSI uniquement lorsque le terminal le demande", async () => {
