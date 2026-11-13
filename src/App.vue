@@ -2,6 +2,7 @@
 import { ref, computed } from "vue";
 import { useLocalStorage } from "./composables/useLocalStorage";
 import { useTodolistTri } from "./composables/useTodolistTri";
+import { useTodolistActions } from "./composables/useTodolistActions";
 import TodoList from "./components/TodoList.vue";
 import TodoForm from "./components/TodoForm.vue";
 import { useTodolistStats } from "./composables/useTodolistStats";
@@ -105,6 +106,14 @@ const { canUseManualSort, sortedTasks } = useTodolistTri(
   filterRestriction,
 );
 
+const { create, destroy, finish, up, down } = useTodolistActions({
+  tasks,
+  nextId,
+  error,
+  canUseManualSort,
+  sortedTasks,
+});
+
 // ----------------------------
 // Bool HaveTask
 // ----------------------------
@@ -119,101 +128,6 @@ const haveTasks = computed(() => {
 
 const changeSort = (newSort) => {
   filterRestriction.value = newSort;
-};
-
-// ----------------------------
-// Mise à jour des positions
-// ----------------------------
-
-const refreshOrder = () => {
-  const orderedTasks = tasks.value.toSorted((a, b) => a.order - b.order);
-
-  orderedTasks.forEach((task, index) => {
-    task.order = index + 1;
-  });
-};
-
-// ----------------------------
-// Gestion des tâches
-// ----------------------------
-
-const create = (description) => {
-  const texte = description.trim();
-
-  if (!texte) {
-    error.value = "Veuillez saisir une tâche.";
-    return;
-  }
-
-  tasks.value.push({
-    id: nextId.value,
-    description: texte,
-    statu: false,
-    order: tasks.value.length + 1,
-  });
-
-  nextId.value++;
-  error.value = "";
-};
-
-const destroy = (id) => {
-  tasks.value = tasks.value.filter((task) => task.id !== id);
-
-  error.value = "";
-  refreshOrder();
-};
-
-const finish = (id) => {
-  const task = tasks.value.find((task) => task.id === id);
-
-  if (!task) return;
-
-  task.statu = !task.statu;
-  error.value = "";
-};
-
-// ----------------------------
-// Déplacement manuel
-// ----------------------------
-
-const up = (id) => {
-  if (!canUseManualSort.value) {
-    error.value = "Le tri manuel est désactivé.";
-    return;
-  }
-
-  const index = sortedTasks.value.findIndex((task) => task.id === id);
-
-  if (index <= 0) return;
-
-  const currentTask = sortedTasks.value[index];
-  const previousTask = sortedTasks.value[index - 1];
-
-  const tempOrder = currentTask.order;
-  currentTask.order = previousTask.order;
-  previousTask.order = tempOrder;
-
-  error.value = "";
-};
-
-const down = (id) => {
-  if (!canUseManualSort.value) {
-    error.value = "Le tri manuel est désactivé.";
-    return;
-  }
-
-  const index = sortedTasks.value.findIndex((task) => task.id === id);
-
-  if (index < 0 || index >= sortedTasks.value.length - 1) return;
-
-  const currentTask = sortedTasks.value[index];
-  const nextTask = sortedTasks.value[index + 1];
-
-  const tempOrder = currentTask.order;
-  currentTask.order = nextTask.order;
-  nextTask.order = tempOrder;
-
-  error.value = "";
 };
 </script>
 
