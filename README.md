@@ -67,21 +67,23 @@ Ouvrez ensuite l’adresse locale affichée dans le terminal.
 
 ## 🧪 Tests automatisés
 
-Lancez les commandes depuis la racine du projet. `npm test` exécute toutes les suites du dossier `test/`. Pour cibler un seul fichier, transmettez son chemin après `--` ; le rapport détaillé affiche les tests réussis et les erreurs rencontrées.
+Lancez les commandes depuis la racine du projet. `npm test` exécute toutes les suites du dossier `test/` avec un rapport terminal personnalisé basé sur le reporter natif de `node:test`. Pour cibler un seul fichier, transmettez son chemin après `--`.
 
 | Commande | Tests exécutés |
 | --- | --- |
-| `npm test` | Toutes les suites du dossier `test/`. |
+| `npm test` | Toutes les suites du dossier `test/`, avec les résultats regroupés par fichier et suite. |
 | `npm test -- test/ajout.test.js` | Ajout : description, espaces superflus, identifiant et validation des valeurs vides. |
 | `npm test -- test/suppression.test.js` | Suppression : retrait de la tâche choisie, réorganisation et effacement d’une ancienne erreur. |
 | `npm test -- test/statut.test.js` | Statut : marquer une tâche terminée, la remettre en cours et ignorer un identifiant inconnu. |
 | `npm test -- test/tri.test.js` | Tri : ordre personnalisé, création, ordre alphabétique, tâches en cours d’abord et déplacements manuels. |
 | `npm test -- test/compteurs.test.js` | Compteurs : total, tâches terminées et en cours, actualisation après modification. |
 | `npm test -- test/persistance.test.js` | Persistance : restauration des tâches et sauvegarde des changements dans le stockage local. |
-| `npm run test:watch` | Toutes les suites, relancées après chaque modification. |
+| `npm run test:watch` | Toutes les suites, relancées après chaque modification et présentées avec le rapport personnalisé. |
 | `npm run test:watch -- test/ajout.test.js` | Suite d’ajout uniquement, relancée après chaque modification. Remplacez le chemin par celui d’une autre suite pour la cibler. |
 
-Le rapport `spec` de Node.js affiche une **coche verte** en cas de réussite et une **croix rouge** avec le nom du test et le détail de l’erreur en cas d’échec. La même sélection de fichier fonctionne avec les deux scripts de test grâce au séparateur `--` de npm.
+Le rapport affiche une **coche verte** pour un test réussi, un **! jaune** pour un test ignoré/TODO/annulé et une **croix rouge** pour un échec. Il indique le fichier, l’explication de chaque échec, et entoure la ligne issue de la stack réelle de Node.js. Si aucune ligne fiable n’est disponible, le rapport le précise et n’invente pas d’extrait. Le résumé utilise les compteurs transmis par le runner ; les tests TODO et annulés sont indiqués séparément lorsqu’ils existent. Les couleurs ANSI sont activées dans les terminaux compatibles et désactivées dans les sorties redirigées ou avec `NO_COLOR`.
+
+Le rapport est implémenté dans `scripts/node-test-reporter.js`. Ses tests de formatage sont regroupés dans `test/rapport.test.js` ; les tests métier existants ne sont pas modifiés.
 
 ## 🗂️ Structure du projet
 
@@ -101,6 +103,8 @@ Le rapport `spec` de Node.js affiche une **coche verte** en cas de réussite et 
 │   │   └── useTodolistTri.js
 │   ├── App.vue             # État et coordination de l’application
 │   └── main.js             # Point d’entrée Vue
+├── scripts/
+│   └── node-test-reporter.js
 ├── test/                   # Tests automatisés organisés par fonctionnalité
 ├── index.html
 ├── package.json
